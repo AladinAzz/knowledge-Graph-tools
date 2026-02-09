@@ -1,0 +1,11 @@
+PyQt6
+rdflib
+owlready2
+pyvis
+networkx
+pytest
+PyQt6-WebEngine
+pyinstaller
+
+
+
