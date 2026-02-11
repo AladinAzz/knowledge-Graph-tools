@@ -1,0 +1,14 @@
+@prefix kb: <http://example.org/kb/> .
+
+<http://example.org/kb/apple_inc.> kb:be kb:technology_company .
+
+kb:company kb:produce kb:iphone .
+
+kb:cupertino kb:be kb:city .
+
+kb:he kb:join kb:1998 .
+
+kb:it kb:found kb:1976 .
+
+kb:tim_cook kb:serve kb:ceo .
+

@@ -19,11 +19,12 @@ from core.reasoner import ReasoningEngine
 from gui.widgets.graph_viewer import GraphViewer
 from gui.widgets.query_widget import QueryWidget
 from gui.widgets.ontology_tree import OntologyTree
+from gui.widgets.text_kg_widget import TextKGWidget
 
 class MainWindow(QMainWindow):
     """
     The main window of the application.
-    Integrates the graph viewer, query widget, and ontology tree.
+    Integrates the graph viewer, query widget, ontology tree, and text-to-KG widget.
     """
     def __init__(self):
         super().__init__()
@@ -49,15 +50,24 @@ class MainWindow(QMainWindow):
         
         self.graph_viewer = GraphViewer()
         self.query_widget = QueryWidget(self.sparql_engine)
+        self.text_kg_widget = TextKGWidget(self.rdf_manager)
+        
+        # Connect signals
+        self.text_kg_widget.graph_merged.connect(self.refresh_graph_view)
         
         self.tabs.addTab(self.graph_viewer, "Graph Visualization")
         self.tabs.addTab(self.query_widget, "SPARQL Query")
+        self.tabs.addTab(self.text_kg_widget, "Text to RDF")
         
         # Dock Widget for Ontology Tree
         self.dock = QDockWidget("Ontology Hierarchy", self)
         self.ontology_tree = OntologyTree()
         self.dock.setWidget(self.ontology_tree)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dock)
+
+    def refresh_graph_view(self):
+        """Refreshes the main graph visualization."""
+        self.graph_viewer.display_graph(self.rdf_manager.get_graph())
 
     def create_menus(self):
         menu_bar = self.menuBar()
@@ -163,11 +173,11 @@ class MainWindow(QMainWindow):
 
     def export_graph(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Export Graph", "", 
-                                                   "Turtle (*.ttl);;RDF/XML (*.xml);;N-Triples (*.nt)")
+                                                   "Turtle (*.ttl);;RDF/XML (*.rdf *.xml);;N-Triples (*.nt)")
         if file_path:
             try:
                 fmt = 'turtle'
-                if file_path.endswith('.xml'): fmt = 'xml'
+                if file_path.endswith('.xml') or file_path.endswith('.rdf'): fmt = 'xml'
                 elif file_path.endswith('.nt'): fmt = 'nt'
                 
                 self.rdf_manager.save_file(file_path, fmt)

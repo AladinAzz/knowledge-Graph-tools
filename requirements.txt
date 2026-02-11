@@ -6,6 +6,6 @@ networkx
 pytest
 PyQt6-WebEngine
 pyinstaller
-
+spacy
 
 

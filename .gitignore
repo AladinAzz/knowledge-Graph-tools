@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build & Distribution
+build/
+dist/
+*.spec
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Project specific outputs/data (optional, but good practice to keep clean)
+# *.owl
+# *.rdf
+# *.html
+# Since there are owl, rdf and html files in root, I'll keep them out of ignore 
+# unless specifically requested or if they are clearly build artifacts.
+# tests/test_sparql_engine.py is active, let's keep test data if not generated.
+# debug_reasoning.owl
+# rows.rdf
+# test_vis.html
