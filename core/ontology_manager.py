@@ -1,7 +1,19 @@
+"""
+Ontology Manager Module
+
+This module is responsible for loading and inspecting OWL/RDFS ontologies using owlready2.
+It allows loading ontology files and extracting the class hierarchy for visualization.
+Note: owlready2 is used for ontology-specific features (classes, properties, reasoning compatibility),
+while rdflib is used for general graph operations in other modules.
+"""
+
 from owlready2 import get_ontology, Thing, ObjectProperty, DataProperty
 import types
 
 class OntologyManager:
+    """
+    Manages ontology loading and inspection using owlready2.
+    """
     def __init__(self):
         self.ontology = None
 

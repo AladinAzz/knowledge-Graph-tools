@@ -1,8 +1,19 @@
+"""
+RDF Manager Module
+
+This module handles the loading, saving, and basic management of RDF graphs using rdflib.
+It provides a wrapper around the rdflib.Graph object to simplify common operations
+such as parsing different file formats (Turtle, RDF/XML, N-Triples) and extracting statistics.
+"""
+
 from rdflib import Graph, URIRef, Literal
 from rdflib.exceptions import ParserError
 import os
 
 class RDFManager:
+    """
+    Manages an RDF graph, providing methods to load, save, and inspect it.
+    """
     def __init__(self):
         self.graph = Graph()
 

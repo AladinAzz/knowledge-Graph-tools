@@ -1,8 +1,20 @@
+"""
+Reasoning Engine Module
+
+This module performs reasoning logic on ontologies using owlready2.
+It integrates with reasoners like HermiT and Pellet to infer new facts (triples)
+from the existing ontology and data. The inferred triples are then converted
+back to a format compatible with the rest of the application (rdflib graph).
+"""
+
 from owlready2 import sync_reasoner_pellet, sync_reasoner, World, Ontology
 import rdflib
 import os
 
 class ReasoningEngine:
+    """
+    Manages the reasoning process using owlready2's sync_reasoner.
+    """
     def __init__(self):
         # We might need a dedicated World for isolation if handling multiple
         self.world = World()

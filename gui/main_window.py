@@ -1,3 +1,11 @@
+"""
+Main Window Module
+
+This module defines the main application window (MainWindow).
+It orchestrates the UI layout, initializes core components (RDFManager, SPARQLEngine, etc.),
+and handles high-level user interactions such as loading files and executing reasoning.
+"""
+
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QTabWidget, 
                              QDockWidget, QFileDialog, QMessageBox, QMenu, QMenuBar)
 from PyQt6.QtCore import Qt
@@ -13,6 +21,10 @@ from gui.widgets.query_widget import QueryWidget
 from gui.widgets.ontology_tree import OntologyTree
 
 class MainWindow(QMainWindow):
+    """
+    The main window of the application.
+    Integrates the graph viewer, query widget, and ontology tree.
+    """
     def __init__(self):
         super().__init__()
         self.setWindowTitle("KB Manager")

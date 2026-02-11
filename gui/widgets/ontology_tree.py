@@ -1,6 +1,16 @@
+"""
+Ontology Tree Widget
+
+This module provides the OntologyTree widget, which displays the class hierarchy of an ontology
+in a tree structure using QTreeWidget.
+"""
+
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTreeWidget, QTreeWidgetItem, QLabel
 
 class OntologyTree(QWidget):
+    """
+    A widget that displays the ontology class hierarchy in a tree view.
+    """
     def __init__(self):
         super().__init__()
         self.layout = QVBoxLayout(self)

@@ -1,3 +1,10 @@
+"""
+Graph Viewer Widget
+
+This module provides the GraphViewer widget, which embeds a PyVis network visualization
+inside a PyQt6 QWebEngineView. It handles converting rdflib graphs to interactive HTML visualizations.
+"""
+
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl
@@ -6,6 +13,9 @@ import tempfile
 import os
 
 class GraphViewer(QWidget):
+    """
+    A widget for displaying interactive force-directed graphs using PyVis and QWebEngineView.
+    """
     def __init__(self):
         super().__init__()
         self.layout = QVBoxLayout(self)

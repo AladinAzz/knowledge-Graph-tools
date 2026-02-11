@@ -1,9 +1,20 @@
+"""
+Query Widget Module
+
+This module defines the QueryWidget, which provides an interface for executing SPARQL queries.
+It includes a text area for query input, a table for displaying results, and a graph view
+for visualizing CONSTRUCT/DESCRIBE results or SELECT results that return triples.
+"""
+
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit, 
                              QPushButton, QTableWidget, QTableWidgetItem, QLabel, QHeaderView, QMessageBox, QTabWidget)
 from rdflib import Graph
 from .graph_viewer import GraphViewer
 
 class QueryWidget(QWidget):
+    """
+    A widget for entering and executing SPARQL queries and displaying results.
+    """
     def __init__(self, sparql_engine):
         super().__init__()
         self.sparql_engine = sparql_engine

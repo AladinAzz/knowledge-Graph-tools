@@ -1,8 +1,25 @@
+"""
+SPARQL Engine Module
+
+This module executes SPARQL queries against an RDF graph.
+It wraps rdflib's query processor and processes the results into a standardized dictionary format
+suitable for the GUI. It supports SELECT, ASK, CONSTRUCT, and DESCRIBE queries.
+"""
+
 from rdflib.plugins.sparql import prepareQuery
 from rdflib.query import Result
 
 class SPARQLEngine:
+    """
+    Handles execution of SPARQL queries on an RDFManager's graph.
+    """
     def __init__(self, rdf_manager):
+        """
+        Initializes the SPARQLEngine.
+        
+        Args:
+            rdf_manager (RDFManager): The instance managing the RDF graph to query.
+        """
         self.rdf_manager = rdf_manager
 
     def execute_query(self, query_str):
