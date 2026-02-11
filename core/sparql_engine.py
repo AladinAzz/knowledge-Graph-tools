@@ -20,11 +20,14 @@ class SPARQLEngine:
     def format_results(self, results):
         """Formats the query results into a dictionary."""
         if results.type == 'SELECT':
+            # Binding results are row-based.
+            # We return raw rdflib terms to allow graph reconstruction in UI if needed.
+            # Serialization (str conversion) can happen at display time.
             return {
                 "type": "SELECT",
                 "vars": results.vars,
                 "bindings": [
-                    {str(var): str(row[var]) for var in results.vars}
+                    {str(var): row[var] for var in results.vars}
                     for row in results
                 ]
             }

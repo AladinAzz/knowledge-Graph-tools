@@ -40,7 +40,10 @@ If built successfully, run `dist/KBManager.exe`.
 - Go to the **SPARQL Query** tab.
 - Enter your query (SELECT, ASK, CONSTRUCT).
 - Click **Execute Query**.
-- Results are shown in the table below.
+- **Tabular Results**: Shown in the "Table" tab.
+- **Graph Results**: Shown in the "Visualization" tab. 
+  - For `CONSTRUCT`/`DESCRIBE`: The full result graph is shown.
+  - For `SELECT`: If the query returns exactly 3 variables (e.g., `?s ?p ?o`), the application attempts to visualize them as a graph.
 - Click **Export Results** to save as CSV or JSON.
 
 ### 4. Reasoning

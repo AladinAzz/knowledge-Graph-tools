@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit, 
-                             QPushButton, QTableWidget, QTableWidgetItem, QLabel, QHeaderView, QMessageBox)
+                             QPushButton, QTableWidget, QTableWidgetItem, QLabel, QHeaderView, QMessageBox, QTabWidget)
 from rdflib import Graph
+from .graph_viewer import GraphViewer
 
 class QueryWidget(QWidget):
     def __init__(self, sparql_engine):
@@ -23,11 +24,19 @@ class QueryWidget(QWidget):
         self.exec_btn.clicked.connect(self.run_query)
         layout.addWidget(self.exec_btn)
 
-        # Results Table
+        # Results Area (Tabs)
+        layout.addWidget(QLabel("Results:"))
+        self.results_tabs = QTabWidget()
+        layout.addWidget(self.results_tabs)
+        
+        # Table Tab
         self.results_table = QTableWidget()
         self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        layout.addWidget(QLabel("Results:"))
-        layout.addWidget(self.results_table)
+        self.results_tabs.addTab(self.results_table, "Table")
+        
+        # Graph Tab
+        self.results_graph = GraphViewer()
+        self.results_tabs.addTab(self.results_graph, "Visualization")
         
         # Export Button
         self.export_btn = QPushButton("Export Results")
@@ -48,6 +57,7 @@ class QueryWidget(QWidget):
         self.results_table.clear()
         
         if formatted['type'] == 'SELECT':
+            self.results_tabs.setCurrentIndex(0) # Switch to Table
             vars = formatted['vars']
             self.results_table.setColumnCount(len(vars))
             self.results_table.setHorizontalHeaderLabels([str(v) for v in vars])
@@ -55,19 +65,55 @@ class QueryWidget(QWidget):
             bindings = formatted['bindings']
             self.results_table.setRowCount(len(bindings))
             
+            # Construct a temporary graph for visualization if we have 3 vars (s, p, o potential)
+            temp_graph = Graph()
+            has_graph_data = False
+            
+            # Check if we have 3 variables
+            if len(vars) == 3:
+                # Naive assumption: columns are s, p, o in order? 
+                # Or just take the first 3.
+                v1, v2, v3 = vars[0], vars[1], vars[2]
+                has_graph_data = True
+            
             for row_idx, row_data in enumerate(bindings):
+                # Update Table
                 for col_idx, var in enumerate(vars):
-                    val = row_data.get(str(var), "")
-                    self.results_table.setItem(row_idx, col_idx, QTableWidgetItem(val))
+                    val = row_data.get(str(var), None)
+                    str_val = str(val) if val is not None else ""
+                    self.results_table.setItem(row_idx, col_idx, QTableWidgetItem(str_val))
+                
+                # Update Graph logic
+                if has_graph_data:
+                    try:
+                        s = row_data.get(str(v1))
+                        p = row_data.get(str(v2))
+                        o = row_data.get(str(v3))
+                        if s and p and o:
+                            temp_graph.add((s, p, o))
+                    except:
+                        pass # enhancing visualization shouldn't crash result display
+                        
+            # If we populated the graph, show it in the tab
+            if has_graph_data and len(temp_graph) > 0:
+                self.results_graph.display_graph(temp_graph)
+                # We can decide whether to auto-switch or not. 
+                # User asked for "link", maybe keeping table as primary for SELECT is better, 
+                # but having the graph available is key.
+                # self.results_tabs.setCurrentIndex(1) # Optional: auto-switch
+            else:
+                 # Clear graph if no valid data
+                 self.results_graph.display_graph(Graph())
                     
         elif formatted['type'] == 'ASK':
+            self.results_tabs.setCurrentIndex(0) # Switch to Table
             self.results_table.setColumnCount(1)
             self.results_table.setRowCount(1)
             self.results_table.setHorizontalHeaderLabels(["Result"])
             self.results_table.setItem(0, 0, QTableWidgetItem(str(formatted['boolean'])))
             
         elif formatted['type'] == 'CONSTRUCT' or formatted['type'] == 'DESCRIBE':
-            # Display graph as triples
+            # Display graph as triples in Table
             graph = formatted['graph']
             self.results_table.setColumnCount(3)
             self.results_table.setHorizontalHeaderLabels(["Subject", "Predicate", "Object"])
@@ -77,6 +123,10 @@ class QueryWidget(QWidget):
                 self.results_table.setItem(row_idx, 0, QTableWidgetItem(str(s)))
                 self.results_table.setItem(row_idx, 1, QTableWidgetItem(str(p)))
                 self.results_table.setItem(row_idx, 2, QTableWidgetItem(str(o)))
+                
+            # Display graph in GraphViewer
+            self.results_graph.display_graph(graph)
+            self.results_tabs.setCurrentIndex(1) # Switch to Visualization
 
     def export_results(self):
         if not hasattr(self, 'current_results') or not self.current_results:

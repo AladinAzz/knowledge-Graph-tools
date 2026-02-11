@@ -8,7 +8,7 @@
   <!-- OWL Header Example -->
 	<owl:Ontology rdf:about="http://www.linkeddatatools.com/plants">
 		<dc:title>The LinkedDataTools.com Example Plant Ontology</dc:title>
-		<dc:description>An example ontology written for the LinkedDataTools.com RDFS & OWL introduction tutorial</dc:description>
+		<dc:description>An example ontology written for the LinkedDataTools.com RDFS &amp; OWL introduction tutorial</dc:description>
 	</owl:Ontology>
 
 	<!-- OWL Class Definition - Plant Type -->
