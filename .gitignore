@@ -7,6 +7,7 @@ venv/
 ENV/
 env/
 .env
+core/__pycache__/
 
 # Testing
 .pytest_cache/
