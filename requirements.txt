@@ -3,9 +3,8 @@ rdflib
 owlready2
 pyvis
 networkx
-pytest
-PyQt6-WebEngine
-pyinstaller
 spacy
-
-
+spacy-lookups-data
+PyQt6-WebEngine
+google-generativeai
+pyinstaller

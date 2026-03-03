@@ -55,3 +55,33 @@ class RDFManager:
 
     def get_graph(self):
         return self.graph
+
+    def get_namespaces(self):
+        """Returns a list of (prefix, uri) tuples."""
+        return list(self.graph.namespaces())
+
+    def bind_namespace(self, prefix, uri):
+        """Binds a prefix to a URI."""
+        self.graph.bind(prefix, uri)
+
+    def remove_namespace(self, prefix):
+        """Removes a namespace binding (requires rdflib graph bind with override or unbind logic)."""
+        # rdflib Graph.bind(override=True) might be needed if replacing.
+        # To remove, we might need to access the store's namespace manager directly.
+        # self.graph.namespace_manager.bind(prefix, uri, override=True)
+        # But to delete?
+        # self.graph.namespace_manager.remove((prefix, None)) # remove by prefix?
+        # Let's check rdflib docs or implementation logic.
+        # NamespaceManager has remove((prefix, namespace)).
+        # We need the URI to remove it safely? Or just iterate.
+        
+        ns_manager = self.graph.namespace_manager
+        # Find uri for prefix
+        uri = None
+        for p, u in ns_manager.namespaces():
+            if p == prefix:
+                uri = u
+                break
+        
+        if uri:
+            ns_manager.remove((prefix, uri))

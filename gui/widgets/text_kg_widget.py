@@ -7,24 +7,52 @@ and visualize the result. It provides a table view of extracted triples and a gr
 
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit, 
                              QPushButton, QLabel, QMessageBox, QTabWidget, QTableWidget, 
-                             QTableWidgetItem, QHeaderView)
+                             QTableWidgetItem, QHeaderView, QLineEdit, QComboBox)
 from PyQt6.QtCore import Qt, pyqtSignal
 from rdflib import Graph
-from core.knowledge_extractor import KnowledgeExtractor
+# from core.knowledge_extractor import KnowledgeExtractor # Deprecated/Swapped
+from core.gemini_extractor import GeminiExtractor
 from .graph_viewer import GraphViewer
 
 class TextKGWidget(QWidget):
     # Signal emitted when new triples are merged into the main graph
     graph_merged = pyqtSignal()
 
-    def __init__(self, rdf_manager):
+    def __init__(self, rdf_manager, settings_manager):
         super().__init__()
         self.rdf_manager = rdf_manager
-        self.extractor = KnowledgeExtractor()
+        self.settings_manager = settings_manager
+        # self.extractor = KnowledgeExtractor()
+        self.extractor = GeminiExtractor() 
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout(self)
+        
+        # 0. Settings Area (API Key & Model)
+        settings_layout = QHBoxLayout()
+        settings_layout.addWidget(QLabel("Gemini API Key:"))
+        self.api_key_input = QLineEdit()
+        self.api_key_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.api_key_input.setPlaceholderText("Enter Google Gemini API Key")
+        self.api_key_input.setText(self.settings_manager.get_api_key())
+        self.api_key_input.textChanged.connect(self.save_settings)
+        settings_layout.addWidget(self.api_key_input)
+        
+        settings_layout.addWidget(QLabel("Model:"))
+        self.model_selector = QComboBox()
+        self.model_selector.setMinimumWidth(150)
+        self.model_selector.addItems(["gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro"])
+        self.model_selector.setCurrentText(self.settings_manager.get_model())
+        self.model_selector.currentTextChanged.connect(self.save_settings)
+        settings_layout.addWidget(self.model_selector)
+        
+        self.fetch_models_btn = QPushButton("Fetch Models")
+        self.fetch_models_btn.setToolTip("Fetch available Gemini models using the API Key")
+        self.fetch_models_btn.clicked.connect(self.fetch_models)
+        settings_layout.addWidget(self.fetch_models_btn)
+        
+        layout.addLayout(settings_layout)
         
         # 1. Text Input Area
         layout.addWidget(QLabel("Input Text for RDF Generation:"))
@@ -34,7 +62,7 @@ class TextKGWidget(QWidget):
         
         # 2. Action Buttons
         btn_layout = QHBoxLayout()
-        self.generate_btn = QPushButton("Generate RDF")
+        self.generate_btn = QPushButton("Generate RDF (Gemini)")
         self.generate_btn.clicked.connect(self.generate_graph)
         btn_layout.addWidget(self.generate_btn)
         
@@ -69,15 +97,32 @@ class TextKGWidget(QWidget):
         
         # State
         self.generated_graph = None
-
+    
     def generate_graph(self):
         text = self.text_input.toPlainText()
         if not text:
             QMessageBox.warning(self, "Warning", "Please enter some text.")
             return
+
+        api_key = self.api_key_input.text().strip()
+        if not api_key:
+             QMessageBox.warning(self, "Warning", "Please enter a valid Gemini API Key.")
+             return
+            
+        model = self.model_selector.currentText()
+        
+        # Configure Extractor
+        self.extractor.set_api_key(api_key)
+        self.extractor.set_model(model)
             
         try:
+            # Show busy? (Maybe add cursor wait)
+            from PyQt6.QtWidgets import QApplication
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+            
             self.generated_graph = self.extractor.extract_triples(text)
+            
+            QApplication.restoreOverrideCursor()
             
             # Update Table
             self.display_table(self.generated_graph)
@@ -88,15 +133,16 @@ class TextKGWidget(QWidget):
             if len(self.generated_graph) > 0:
                 self.add_to_main_btn.setEnabled(True)
                 self.export_btn.setEnabled(True)
-                self.results_tabs.setCurrentIndex(1) # Switch to Viz by default? Or Table? User said same as SPARQL.
-                # In SPARQL, CONSTRUCT goes to Viz. This is like CONSTRUCT.
-                QMessageBox.information(self, "Success", f"Generated {len(self.generated_graph)} triples.")
+                self.results_tabs.setCurrentIndex(1) 
+                QMessageBox.information(self, "Success", f"Generated {len(self.generated_graph)} triples using {model}.")
             else:
                 self.add_to_main_btn.setEnabled(False)
                 self.export_btn.setEnabled(False)
-                QMessageBox.information(self, "Info", "No triples extracted.")
+                QMessageBox.information(self, "Info", "No triples extracted or model returned empty results.")
                 
         except Exception as e:
+            from PyQt6.QtWidgets import QApplication
+            QApplication.restoreOverrideCursor()
             QMessageBox.critical(self, "Error", f"Extraction failed: {e}")
 
     def display_table(self, graph):
@@ -137,3 +183,33 @@ class TextKGWidget(QWidget):
                 QMessageBox.information(self, "Success", f"RDF exported to {file_path}")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to export: {e}")
+
+    def fetch_models(self):
+        api_key = self.api_key_input.text().strip()
+        if not api_key:
+             QMessageBox.warning(self, "Warning", "Please enter a valid Gemini API Key first.")
+             return
+             
+        try:
+            from PyQt6.QtWidgets import QApplication
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+            
+            # Use extractor to list models
+            self.extractor.set_api_key(api_key)
+            models = self.extractor.list_models()
+            
+            self.model_selector.clear()
+            self.model_selector.addItems(models)
+            
+            QApplication.restoreOverrideCursor()
+            QMessageBox.information(self, "Success", f"Fetched {len(models)} models.")
+            
+        except Exception as e:
+            from PyQt6.QtWidgets import QApplication
+            QApplication.restoreOverrideCursor()
+            QMessageBox.critical(self, "Error", f"Failed to list models: {e}")
+
+    def save_settings(self):
+        self.settings_manager.set_api_key(self.api_key_input.text().strip())
+        self.settings_manager.set_model(self.model_selector.currentText())
+        self.settings_manager.save_settings()

@@ -1,14 +1,45 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix kb: <http://example.org/kb/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix schema1: <http://schema.org/> .
 
-<http://example.org/kb/apple_inc.> kb:be kb:technology_company .
+<http://example.org/kb/apple_inc.> a owl:NamedIndividual,
+        foaf:Organization ;
+    kb:be kb:technology_company ;
+    kb:found kb:1976 .
 
-kb:company kb:produce kb:iphone .
+kb:be a owl:ObjectProperty .
 
-kb:cupertino kb:be kb:city .
+kb:company a owl:NamedIndividual ;
+    kb:produce kb:iphone .
 
-kb:he kb:join kb:1998 .
+kb:cupertino a schema1:Place,
+        owl:NamedIndividual ;
+    kb:be kb:city .
 
-kb:it kb:found kb:1976 .
+kb:found a owl:ObjectProperty .
 
-kb:tim_cook kb:serve kb:ceo .
+kb:join a owl:ObjectProperty .
+
+kb:produce a owl:ObjectProperty .
+
+kb:serve a owl:ObjectProperty .
+
+kb:tim_cook a owl:NamedIndividual,
+        foaf:Person ;
+    kb:join kb:1998 ;
+    kb:serve kb:ceo .
+
+kb:1976 a owl:NamedIndividual .
+
+kb:1998 a owl:NamedIndividual .
+
+kb:ceo a owl:NamedIndividual .
+
+kb:city a owl:NamedIndividual .
+
+kb:iphone a owl:NamedIndividual,
+        foaf:Organization .
+
+kb:technology_company a owl:NamedIndividual .
 

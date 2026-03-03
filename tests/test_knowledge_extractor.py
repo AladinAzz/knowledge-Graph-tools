@@ -64,3 +64,41 @@ class TestKnowledgeExtractor:
         # Find the predicate URI
         prop_triples = list(graph.triples((None, RDF.type, OWL.ObjectProperty)))
         assert len(prop_triples) >= 1
+
+    def test_conjunctions_and_ner(self, extractor):
+        text = "Alice and Bob visited Paris."
+        graph = extractor.extract_triples(text)
+        
+        from rdflib import RDF, FOAF, Namespace
+        SCHEMA = Namespace("http://schema.org/")
+        
+        # Check that we have 2 triples: Alice-visited-Paris, Bob-visited-Paris
+        # We can just count total triples. 
+        # 2 main triples + 1 property decl + 2*2 individuals decl + 3 NER types = ~10 triples
+        # Let's check specifically for subjects
+        
+        subjects = set(graph.subjects(RDF.type, FOAF.Person))
+        assert len(subjects) == 2 # Alice and Bob
+        
+        # Check GPE
+        places = set(graph.subjects(RDF.type, SCHEMA.Place))
+        assert len(places) == 1 # Paris
+
+    def test_coreference_resolution(self, extractor):
+        text = "Alice is a scientist. She lives in Paris."
+        graph = extractor.extract_triples(text)
+        
+        from rdflib import URIRef
+        
+        # We expect a triple: (Alice, lives, Paris)
+        # Instead of (She, lives, Paris)
+        
+        # Check if there is a triple where subject is Alice and object is Paris
+        # Note: URIs are lowercased and distinct
+        
+        alice_uri = extractor.ns['alice']
+        paris_uri = extractor.ns['paris']
+        
+        # Find predicates connecting Alice and Paris
+        preds = list(graph.predicates(alice_uri, paris_uri))
+        assert len(preds) > 0

@@ -1,0 +1,63 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix kb: <http://example.org/kb/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema1: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+kb:marriage_marie_pierre a schema1:Event ;
+    schema1:participant kb:marie_curie,
+        kb:pierre_curie ;
+    schema1:startDate "1895"^^xsd:gYear .
+
+kb:FirstWomanNobelWinner rdfs:subClassOf schema1:Person .
+
+kb:nobel_prize_chemistry_1911 a kb:Award ;
+    schema1:awardYear "1911"^^xsd:gYear ;
+    schema1:name "Nobel Prize in Chemistry" .
+
+kb:nobel_prize_physics_1903 a kb:Award ;
+    schema1:awardYear "1903"^^xsd:gYear ;
+    schema1:name "Nobel Prize in Physics" .
+
+kb:radioactivity a kb:ScientificField ;
+    rdfs:label "Radioactivity" .
+
+kb:university_of_paris a schema1:EducationalOrganization ;
+    schema1:location kb:paris .
+
+kb:warsaw a schema1:City ;
+    rdfs:label "Warsaw" .
+
+kb:Award rdfs:subClassOf schema1:Thing .
+
+kb:ChemicalElement rdfs:subClassOf schema1:Thing .
+
+kb:marie_curie a kb:FirstWomanNobelWinner,
+        schema1:Person ;
+    kb:discovered kb:polonium,
+        kb:radium ;
+    kb:moved_to kb:paris ;
+    kb:received_award kb:nobel_prize_chemistry_1911,
+        kb:nobel_prize_physics_1903 ;
+    kb:work_on kb:radioactivity ;
+    schema1:alumniOf kb:university_of_paris ;
+    schema1:birthDate "1867"^^xsd:gYear ;
+    schema1:birthPlace kb:warsaw ;
+    schema1:spouse kb:pierre_curie ;
+    foaf:name "Marie Curie" .
+
+kb:paris a schema1:City ;
+    rdfs:label "Paris" .
+
+kb:pierre_curie a schema1:Person ;
+    kb:discovered kb:polonium,
+        kb:radium ;
+    schema1:spouse kb:marie_curie ;
+    foaf:name "Pierre Curie" .
+
+kb:polonium a kb:ChemicalElement ;
+    rdfs:label "Polonium" .
+
+kb:radium a kb:ChemicalElement ;
+    rdfs:label "Radium" .
+

@@ -3,61 +3,59 @@
    xmlns:kb="http://example.org/kb/"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 >
-  <rdf:Description rdf:about="http://example.org/kb/company">
-    <kb:produce rdf:resource="http://example.org/kb/iphone"/>
+  <rdf:Description rdf:about="http://example.org/kb/1998">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/iphone">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://example.org/kb/cupertino">
     <kb:be rdf:resource="http://example.org/kb/city"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://schema.org/Place"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/city">
+  <rdf:Description rdf:about="http://example.org/kb/tim_cook">
+    <kb:serve rdf:resource="http://example.org/kb/ceo"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+    <kb:join rdf:resource="http://example.org/kb/1998"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/it">
+  <rdf:Description rdf:about="http://example.org/kb/apple_inc.">
+    <kb:be rdf:resource="http://example.org/kb/technology_company"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
     <kb:found rdf:resource="http://example.org/kb/1976"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/company">
+    <kb:produce rdf:resource="http://example.org/kb/iphone"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://example.org/kb/be">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/apple_inc.">
-    <kb:be rdf:resource="http://example.org/kb/technology_company"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/1998">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/technology_company">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/he">
-    <kb:join rdf:resource="http://example.org/kb/1998"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/ceo">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/tim_cook">
-    <kb:serve rdf:resource="http://example.org/kb/ceo"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/serve">
+  <rdf:Description rdf:about="http://example.org/kb/join">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://example.org/kb/produce">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/found">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/serve">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/ceo">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/city">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
   <rdf:Description rdf:about="http://example.org/kb/1976">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/join">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/iphone">
+  <rdf:Description rdf:about="http://example.org/kb/technology_company">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://example.org/kb/found">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
   </rdf:Description>
 </rdf:RDF>

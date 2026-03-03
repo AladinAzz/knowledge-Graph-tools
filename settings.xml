@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Settings>
+  <Gemini>
+    <ApiKey>AIzaSyCmHlsaCty8kZz5-ZEcp38h5E-yGtZqA2M</ApiKey>
+    <Model>gemini-3-flash-preview</Model>
+  </Gemini>
+  <Appearance>
+    <DarkTheme>True</DarkTheme>
+  </Appearance>
+  <History>
+    <SPARQL>
+      <Query>SELECT ?current ?year WHERE {
+  BIND(NOW() AS ?current).
+  BIND(YEAR(?current) AS ?year).
+  FILTER(xsd:integer(?year) &gt; 20)
+}</Query>
+      <Query>SELECT ?current ?year WHERE {
+  BIND(NOW() AS ?current).
+  BIND(YEAR(?current) AS ?year).
+}</Query>
+      <Query>SELECT ?current WHERE {
+  BIND(NOW() AS ?current)
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT * WHERE {
+  ?x !foaf:knows ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT * WHERE {
+  ?x ^foaf:knows ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT * WHERE {
+  ?x foaf:knows? ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT * WHERE {
+  ?x foaf:knows* ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT * WHERE {
+  ?x foaf:knows ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT * WHERE {
+  ?x foaf:knows+ ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT ?person WHERE {
+  ?x foaf:knows+ ?person .
+?x ?p ?person.
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT ?person WHERE {
+  ?x foaf:knows+ ?person .
+?x ?p ?person
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT ?person WHERE {
+  ?x foaf:knows+ ?person .
+}</Query>
+      <Query>PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT ?person WHERE {
+  ?x foaf:knows? ?person .
+}</Query>
+      <Query>PREFIX foaf: &lt;https://xmlns.com/foaf/0.1/&gt;
+
+SELECT * WHERE { 
+?s  foaf:knows ?o }</Query>
+      <Query>PREFIX foaf: &lt;https://xmlns.com/foaf/0.1/&gt;
+
+SELECT * WHERE { 
+?s  foaf:knows ?o } LIMIT 10</Query>
+      <Query>PREFIX foaf: &lt;https://xmlns.com/foaf/0.1/&gt;
+
+SELECT ?s WHERE { 
+?s a foaf:Person } LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+PREFIX kb: &lt;http://example.org/kb/&gt;
+SELECT * WHERE { 
+  ?s a* ?o .
+?s ?p ?o
+
+     
+}LIMIT 10
+VALUES ?s {kb:marie_curie}</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+PREFIX kb: &lt;http://example.org/kb/&gt;
+SELECT * WHERE { 
+  ?s a ?o .
+?s ?p ?o
+
+     
+}LIMIT 1
+VALUES ?s {kb:marie_curie}</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+PREFIX kb: &lt;http://example.org/kb/&gt;
+SELECT * WHERE { 
+  ?s a ?o .
+?s ?p ?o
+
+     
+}LIMIT 10
+VALUES ?s {kb:marie_curie}</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+PREFIX kb: &lt;http://example.org/kb/&gt;
+SELECT * WHERE { 
+  ?s a ?o .
+?s ?p ?o
+
+     
+}
+VALUES ?s {kb:marie_curie}</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+PREFIX kb: &lt;http://example.org/kb/&gt;
+SELECT * WHERE { 
+  ?s a ?o .
+?s ?p ?o
+
+     
+}
+VALUES ?s {"marie_curie"}</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT * WHERE { 
+  ?s a ?o .
+?s ?p ?o
+
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT * WHERE { 
+  ?s a ?o .
+
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT * WHERE { 
+  ?s a ?o .
+?s ?p ?o.
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT ?s WHERE { 
+  ?s rdfs:label ?o .
+?s ?p ?o.
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT * WHERE { 
+  ?s rdfs:label ?o .
+?s ?p ?o.
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT * WHERE { 
+  ?s rdfs:label ?o .
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT ?s WHERE { 
+  ?s rdfs:label ?o .
+     
+} LIMIT 10</Query>
+      <Query>PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+
+SELECT ?s WHERE { 
+  ?s rdfs:label ?o ;
+     a sch:Person .
+} LIMIT 10</Query>
+      <Query>PREFIX foaf: &lt;https://xmlns.com/foaf/0.1/&gt;
+
+SELECT ?s WHERE { ?s a
+foaf:Person } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+PREFIX foaf: &lt;https://xmlns.com/foaf/0.1/&gt;
+
+SELECT ?s WHERE { ?s a
+foaf:Person } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+PREFIX foaf: &lt;https://xmlns.com/foaf/0.1/&gt;
+
+SELECT * WHERE { ?s a
+foaf:Person } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+SELECT * WHERE { ?s a
+sch:person } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+SELECT * WHERE { ?s ?p
+sch:person } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+SELECT * WHERE { ?s
+sch:person ?o . } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+SELECT ?s WHERE { ?s
+sch:person ?o . } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+SELECT ?s WHERE { ?s
+a sch:person . } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX sch: &lt;http://schema.org/&gt;
+SELECT ?s WHERE { ?s rdf:label ?o;
+a sch:person . } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?s WHERE { ?s rdf:label ?o;
+a ?person
+  } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?s WHERE { ?s rdf:label ?o  } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?s ?p ?o WHERE { ?s rdf:label ?o } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?s  ?o WHERE { ?s rdf:label ?o } LIMIT 10</Query>
+      <Query>PREFIX rdf: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+
+SELECT ?s WHERE { ?s rdf:label ?o } LIMIT 10</Query>
+      <Query>SELECT * WHERE { ?s ?label ?o } LIMIT 10</Query>
+    </SPARQL>
+  </History>
+</Settings>
