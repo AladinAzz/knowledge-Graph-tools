@@ -1,6 +1,13 @@
 
 import sys
 import os
+"""
+Unit Tests for SPARQL Syntax Highlighter
+
+This module contains unit tests for the SPARQLHighlighter, verifying 
+correct color formatting for keywords, variables, and URIs.
+"""
+
 import pytest
 from PyQt6.QtWidgets import QApplication, QTextEdit
 from PyQt6.QtGui import QTextDocument, QSyntaxHighlighter, QColor

@@ -1,6 +1,13 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+"""
+UI Tests for Reasoning Integration
+
+This module contains integration tests for reasoning functionality within the main window, 
+verifying inferred triples display and reasoning toggle state.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 

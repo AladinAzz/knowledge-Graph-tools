@@ -1,6 +1,13 @@
 
 import sys
 import os
+"""
+UI Tests for Gemini Extractor
+
+This module contains integration tests for the GeminiExtractor UI components, 
+verifying API key handling, model selection, and extraction workflows.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 

@@ -3,7 +3,8 @@ RDF Manager Module
 
 This module handles the loading, saving, and basic management of RDF graphs using rdflib.
 It provides a wrapper around the rdflib.Graph object to simplify common operations
-such as parsing different file formats (Turtle, RDF/XML, N-Triples) and extracting statistics.
+such as parsing different file formats (Turtle, RDF/XML, N-Triples, Turtle-star, N-Triples-star)
+and extracting statistics.
 """
 
 from rdflib import Graph, URIRef, Literal
@@ -27,10 +28,16 @@ class RDFManager:
         fmt = None
         if file_ext == '.ttl':
             fmt = 'turtle'
-        elif file_ext == '.xml' or file_ext == '.rdf':
+        elif file_ext == '.trig':
+            fmt = 'trig'
+        elif file_ext == '.xml' or file_ext == '.rdf' or file_ext == '.owl':
             fmt = 'xml'
         elif file_ext == '.nt':
             fmt = 'nt'
+        elif file_ext == '.nq':
+            fmt = 'nquads'
+        elif file_ext == '.jsonld':
+            fmt = 'json-ld'
             
         try:
             self.graph.parse(file_path, format=fmt)
@@ -46,11 +53,22 @@ class RDFManager:
 
     def get_statistics(self):
         """Returns basic statistics about the graph."""
+        subjects = set(self.graph.subjects())
+        predicates = set(self.graph.predicates())
+        objects = set(self.graph.objects())
+        
+        # Count classes and properties
+        from rdflib import RDF, OWL, RDFS
+        classes = set()
+        for s, p, o in self.graph.triples((None, RDF.type, None)):
+            classes.add(o)
+        
         return {
             "num_triples": len(self.graph),
-            "num_subjects": len(set(self.graph.subjects())),
-            "num_predicates": len(set(self.graph.predicates())),
-            "num_objects": len(set(self.graph.objects())),
+            "num_subjects": len(subjects),
+            "num_predicates": len(predicates),
+            "num_objects": len(objects),
+            "num_classes": len(classes),
         }
 
     def get_graph(self):
@@ -65,17 +83,9 @@ class RDFManager:
         self.graph.bind(prefix, uri)
 
     def remove_namespace(self, prefix):
-        """Removes a namespace binding (requires rdflib graph bind with override or unbind logic)."""
-        # rdflib Graph.bind(override=True) might be needed if replacing.
-        # To remove, we might need to access the store's namespace manager directly.
-        # self.graph.namespace_manager.bind(prefix, uri, override=True)
-        # But to delete?
-        # self.graph.namespace_manager.remove((prefix, None)) # remove by prefix?
-        # Let's check rdflib docs or implementation logic.
-        # NamespaceManager has remove((prefix, namespace)).
-        # We need the URI to remove it safely? Or just iterate.
-        
+        """Removes a namespace binding. Compatible with rdflib 6.x and 7.x."""
         ns_manager = self.graph.namespace_manager
+        
         # Find uri for prefix
         uri = None
         for p, u in ns_manager.namespaces():
@@ -83,5 +93,23 @@ class RDFManager:
                 uri = u
                 break
         
-        if uri:
-            ns_manager.remove((prefix, uri))
+        if uri is None:
+            return
+        
+        # Try multiple approaches for compatibility
+        try:
+            # rdflib 6.x approach
+            if hasattr(ns_manager, 'remove'):
+                ns_manager.remove((prefix, uri))
+                return
+        except (AttributeError, TypeError):
+            pass
+        
+        try:
+            # rdflib 7.x: rebind all namespaces except the one to remove
+            existing = [(p, u) for p, u in ns_manager.namespaces() if p != prefix]
+            # Reset namespace bindings by rebinding all except target
+            for p, u in existing:
+                self.graph.bind(p, u, override=True, replace=True)
+        except Exception as e:
+            print(f"Warning: Could not remove namespace '{prefix}': {e}")

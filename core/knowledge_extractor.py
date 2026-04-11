@@ -97,23 +97,19 @@ class KnowledgeExtractor:
                         s_text = last_subject_label
                     
                     # Update last subject if it's a candidate (PROPN or Entity)
-                    # Exclude GPE, LOC, DATE, TIME, CARDINAL from being 'actors' usually
                     ent_type = entity_map.get(s.i)
                     if s.pos_ == "PROPN" and ent_type not in ['GPE', 'LOC', 'DATE', 'TIME', 'CARDINAL', 'QUANTITY']:
                          last_subject_label = s_text
                         
                     for o in objects:
                         o_text = self._get_compound(o)
-                        # Resolve object pronoun too? Rare for simple S-P-O but possible "Alice saw Bob. She called him."
-                        if o.pos_ == "PRON" and last_subject_label: # This might be risky if we want obj coreference to obj. But simple approach: resolve to subject.
-                             # Actually, 'him' referring to last subject? Ambiguous. 
-                             # Task said "He/She -> Last Entity". Usually imply Subject.
-                             # Let's simple resolve if it's he/she/it
-                             if o.text.lower() in ["he", "she", "it", "they"]:
+                        
+                        # Resolve object pronouns (BUG-7 fix: use object-position pronouns)
+                        if o.pos_ == "PRON" and last_subject_label:
+                             if o.text.lower() in ["him", "her", "it", "them"]:
                                  o_text = last_subject_label
 
-                        # Update last subject candidates from object? "I saw Alice." -> Next "She" is Alice.
-                        # Yes, object can be antecedent.
+                        # Update last subject candidates from object too
                         ent_type_o = entity_map.get(o.i)
                         if o.pos_ == "PROPN" and ent_type_o not in ['GPE', 'LOC', 'DATE', 'TIME', 'CARDINAL', 'QUANTITY']:
                              last_subject_label = o_text
@@ -128,18 +124,7 @@ class KnowledgeExtractor:
                         g.add((s_uri, RDF.type, OWL.NamedIndividual))
                         g.add((o_uri, RDF.type, OWL.NamedIndividual))
                         
-                        # Add NER Types
-                        # Check subject type
-                        if entity_map.get(s.i) == 'PERSON' or (s_text == last_subject_label and last_subject_label):
-                             # If we resolved to a label that WAS a person, maybe we should track type? 
-                             # Simplification: If resolved, assume Person if ambiguous.
-                             # But sticking to explicit map is safer unless we track type history.
-                             if entity_map.get(s.i) == 'PERSON': g.add((s_uri, RDF.type, FOAF.Person))
-                             # Note: We lost type tracking if we just track string label. 
-                             # Re-typing based on label match is hard without a registry.
-                             # But wait, later logic handles explicit NER.
-                             pass
-                        
+                        # Add NER Types (BUG-8 fix: removed duplicate block)
                         if entity_map.get(s.i) == 'PERSON': g.add((s_uri, RDF.type, FOAF.Person))
                         elif entity_map.get(s.i) == 'ORG': g.add((s_uri, RDF.type, FOAF.Organization))
                         elif entity_map.get(s.i) == 'GPE': g.add((s_uri, RDF.type, self.schema.Place))
@@ -153,15 +138,12 @@ class KnowledgeExtractor:
 
     def _get_compound(self, token):
         """Recursively builds the full compound noun phrase."""
-        # Check children for 'compound' dependency
         compounds = [child for child in token.children if child.dep_ == "compound"]
-        # Sort by position in text (though usually compound comes before)
         compounds.append(token)
         compounds.sort(key=lambda x: x.i)
         
         return " ".join([t.text for t in compounds])
                 
-
 
     def _clean_text(self, text):
         """Normalizes text for URI generation."""

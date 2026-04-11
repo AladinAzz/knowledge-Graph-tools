@@ -1,6 +1,13 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+"""
+Tests for Graph Viewer Interaction
+
+This module contains tests for the GraphViewer widget, verifying 
+layout changes, node selection, and triple removal functionality.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
 

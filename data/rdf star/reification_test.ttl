@@ -1,0 +1,21 @@
+@prefix ex: <http://example.org/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Standard triple
+ex:alice foaf:knows ex:bob .
+
+# Stating something about the above statement (Standard RDF Reification for RDFLib)
+ex:statement1 rdf:type rdf:Statement ;
+    rdf:subject ex:alice ;
+    rdf:predicate foaf:knows ;
+    rdf:object ex:bob ;
+    ex:certainty 0.9 .
+
+# Another standard statement with metadata
+ex:bob foaf:age 30 .
+ex:statement2 rdf:type rdf:Statement ;
+    rdf:subject ex:bob ;
+    rdf:predicate foaf:age ;
+    rdf:object 30 ;
+    ex:source ex:datasource1 .

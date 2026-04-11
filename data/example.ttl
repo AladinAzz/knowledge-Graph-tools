@@ -1,0 +1,32 @@
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix ns1: <http://example.org/kb/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://example.org/kb/apple_inc.> a owl:NamedIndividual,
+        foaf:Organization ;
+    ns1:establish ns1:april .
+
+ns1:consist a owl:ObjectProperty .
+
+ns1:establish a owl:ObjectProperty .
+
+ns1:headquarters a owl:NamedIndividual ;
+    ns1:locate ns1:cupertino .
+
+ns1:locate a owl:ObjectProperty .
+
+ns1:team a owl:NamedIndividual ;
+    ns1:consist ns1:steve_jobs,
+        ns1:steve_wozniak .
+
+ns1:april a owl:NamedIndividual .
+
+ns1:cupertino a <http://schema.org/Place>,
+        owl:NamedIndividual .
+
+ns1:steve_jobs a owl:NamedIndividual,
+        foaf:Person .
+
+ns1:steve_wozniak a owl:NamedIndividual,
+        foaf:Person .
+

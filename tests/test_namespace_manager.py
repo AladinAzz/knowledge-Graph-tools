@@ -1,6 +1,13 @@
 
 import sys
 import os
+"""
+Tests for Namespace Management
+
+This module contains tests for the NamespaceDialog and RDFManager's 
+namespace binding/removal functionality.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 from PyQt6.QtWidgets import QApplication

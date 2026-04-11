@@ -1,16 +1,19 @@
 """
 Text to RDF Widget
 
-This widget allows users to input text, generate an RDF graph using the KnowledgeExtractor,
-and visualize the result. It provides a table view of extracted triples and a graph visualization.
+This widget provides two tabs for converting text to RDF:
+1. Gemini AI extraction - uses Google Gemini API for intelligent triple extraction
+2. SpaCy NLP extraction - uses local SpaCy NLP for rule-based triple extraction
+
+Both generate RDF graphs that can be visualized and merged into the main graph.
 """
 
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPlainTextEdit, 
                              QPushButton, QLabel, QMessageBox, QTabWidget, QTableWidget, 
-                             QTableWidgetItem, QHeaderView, QLineEdit, QComboBox)
+                             QTableWidgetItem, QHeaderView, QLineEdit, QComboBox,
+                             QFileDialog, QApplication)
 from PyQt6.QtCore import Qt, pyqtSignal
 from rdflib import Graph
-# from core.knowledge_extractor import KnowledgeExtractor # Deprecated/Swapped
 from core.gemini_extractor import GeminiExtractor
 from .graph_viewer import GraphViewer
 
@@ -22,21 +25,31 @@ class TextKGWidget(QWidget):
         super().__init__()
         self.rdf_manager = rdf_manager
         self.settings_manager = settings_manager
-        # self.extractor = KnowledgeExtractor()
         self.extractor = GeminiExtractor() 
+        self.spacy_extractor = None  # Lazy-loaded
+        self.generated_graph = None
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout(self)
         
-        # 0. Settings Area (API Key & Model)
+        # Main tabs: Gemini vs SpaCy
+        self.method_tabs = QTabWidget()
+        layout.addWidget(self.method_tabs)
+        
+        # === Tab 1: Gemini Extraction ===
+        gemini_widget = QWidget()
+        gemini_layout = QVBoxLayout(gemini_widget)
+        
+        # Settings Area (API Key & Model)
         settings_layout = QHBoxLayout()
-        settings_layout.addWidget(QLabel("Gemini API Key:"))
+        settings_layout.addWidget(QLabel("API Key:"))
         self.api_key_input = QLineEdit()
         self.api_key_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.api_key_input.setPlaceholderText("Enter Google Gemini API Key")
         self.api_key_input.setText(self.settings_manager.get_api_key())
-        self.api_key_input.textChanged.connect(self.save_settings)
+        # BUG-13 fix: save on editing finished, not every keystroke
+        self.api_key_input.editingFinished.connect(self.save_settings)
         settings_layout.addWidget(self.api_key_input)
         
         settings_layout.addWidget(QLabel("Model:"))
@@ -52,54 +65,89 @@ class TextKGWidget(QWidget):
         self.fetch_models_btn.clicked.connect(self.fetch_models)
         settings_layout.addWidget(self.fetch_models_btn)
         
-        layout.addLayout(settings_layout)
+        gemini_layout.addLayout(settings_layout)
         
-        # 1. Text Input Area
-        layout.addWidget(QLabel("Input Text for RDF Generation:"))
-        self.text_input = QPlainTextEdit()
-        self.text_input.setPlaceholderText("Enter text here (e.g., 'Albert Einstein was born in Ulm.')...")
-        layout.addWidget(self.text_input)
+        # Text Input
+        gemini_layout.addWidget(QLabel("Input Text for RDF Generation (Gemini AI):"))
+        self.gemini_text_input = QPlainTextEdit()
+        self.gemini_text_input.setPlaceholderText("Enter text here (e.g., 'Albert Einstein was born in Ulm.')...")
+        gemini_layout.addWidget(self.gemini_text_input)
         
-        # 2. Action Buttons
-        btn_layout = QHBoxLayout()
-        self.generate_btn = QPushButton("Generate RDF (Gemini)")
-        self.generate_btn.clicked.connect(self.generate_graph)
-        btn_layout.addWidget(self.generate_btn)
+        # Action Buttons
+        gemini_btn_layout = QHBoxLayout()
+        self.gemini_generate_btn = QPushButton("Generate RDF (Gemini)")
+        self.gemini_generate_btn.clicked.connect(self.generate_graph_gemini)
+        gemini_btn_layout.addWidget(self.gemini_generate_btn)
         
-        self.add_to_main_btn = QPushButton("Merge to Main Graph")
-        self.add_to_main_btn.clicked.connect(self.add_to_main_graph)
-        self.add_to_main_btn.setEnabled(False)
-        btn_layout.addWidget(self.add_to_main_btn)
+        self.gemini_merge_btn = QPushButton("Merge to Main Graph")
+        self.gemini_merge_btn.clicked.connect(self.add_to_main_graph)
+        self.gemini_merge_btn.setEnabled(False)
+        gemini_btn_layout.addWidget(self.gemini_merge_btn)
+        gemini_layout.addLayout(gemini_btn_layout)
         
-        layout.addLayout(btn_layout)
+        # Results
+        gemini_layout.addWidget(QLabel("Results:"))
+        self.gemini_results_tabs = QTabWidget()
+        gemini_layout.addWidget(self.gemini_results_tabs)
         
-        # 3. Results Area (Tabs)
-        layout.addWidget(QLabel("Results:"))
-        self.results_tabs = QTabWidget()
-        layout.addWidget(self.results_tabs)
+        self.gemini_table = QTableWidget()
+        self.gemini_table.setColumnCount(3)
+        self.gemini_table.setHorizontalHeaderLabels(["Subject", "Predicate", "Object"])
+        self.gemini_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.gemini_results_tabs.addTab(self.gemini_table, "Table")
         
-        # Tab 1: Table
-        self.results_table = QTableWidget()
-        self.results_table.setColumnCount(3)
-        self.results_table.setHorizontalHeaderLabels(["Subject", "Predicate", "Object"])
-        self.results_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.results_tabs.addTab(self.results_table, "Table")
+        self.gemini_graph_viewer = GraphViewer()
+        self.gemini_results_tabs.addTab(self.gemini_graph_viewer, "Visualization")
         
-        # Tab 2: Visualization
-        self.graph_viewer = GraphViewer()
-        self.results_tabs.addTab(self.graph_viewer, "Visualization")
+        self.gemini_export_btn = QPushButton("Export RDF")
+        self.gemini_export_btn.clicked.connect(self.export_rdf)
+        self.gemini_export_btn.setEnabled(False)
+        gemini_layout.addWidget(self.gemini_export_btn)
         
-        # 4. Export Button
-        self.export_btn = QPushButton("Export RDF")
-        self.export_btn.clicked.connect(self.export_rdf)
-        self.export_btn.setEnabled(False)
-        layout.addWidget(self.export_btn)
+        self.method_tabs.addTab(gemini_widget, "🤖 Gemini AI")
         
-        # State
-        self.generated_graph = None
+        # === Tab 2: SpaCy Extraction ===
+        spacy_widget = QWidget()
+        spacy_layout = QVBoxLayout(spacy_widget)
+        
+        spacy_layout.addWidget(QLabel("Input Text for RDF Generation (SpaCy NLP):"))
+        self.spacy_text_input = QPlainTextEdit()
+        self.spacy_text_input.setPlaceholderText("Enter text here (e.g., 'Alice is a scientist. She lives in Paris.')...")
+        spacy_layout.addWidget(self.spacy_text_input)
+        
+        spacy_btn_layout = QHBoxLayout()
+        self.spacy_generate_btn = QPushButton("Generate RDF (SpaCy)")
+        self.spacy_generate_btn.clicked.connect(self.generate_graph_spacy)
+        spacy_btn_layout.addWidget(self.spacy_generate_btn)
+        
+        self.spacy_merge_btn = QPushButton("Merge to Main Graph")
+        self.spacy_merge_btn.clicked.connect(self.add_to_main_graph)
+        self.spacy_merge_btn.setEnabled(False)
+        spacy_btn_layout.addWidget(self.spacy_merge_btn)
+        spacy_layout.addLayout(spacy_btn_layout)
+        
+        spacy_layout.addWidget(QLabel("Results:"))
+        self.spacy_results_tabs = QTabWidget()
+        spacy_layout.addWidget(self.spacy_results_tabs)
+        
+        self.spacy_table = QTableWidget()
+        self.spacy_table.setColumnCount(3)
+        self.spacy_table.setHorizontalHeaderLabels(["Subject", "Predicate", "Object"])
+        self.spacy_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.spacy_results_tabs.addTab(self.spacy_table, "Table")
+        
+        self.spacy_graph_viewer = GraphViewer()
+        self.spacy_results_tabs.addTab(self.spacy_graph_viewer, "Visualization")
+        
+        self.spacy_export_btn = QPushButton("Export RDF")
+        self.spacy_export_btn.clicked.connect(self.export_rdf)
+        self.spacy_export_btn.setEnabled(False)
+        spacy_layout.addWidget(self.spacy_export_btn)
+        
+        self.method_tabs.addTab(spacy_widget, "🧠 SpaCy NLP")
     
-    def generate_graph(self):
-        text = self.text_input.toPlainText()
+    def generate_graph_gemini(self):
+        text = self.gemini_text_input.toPlainText()
         if not text:
             QMessageBox.warning(self, "Warning", "Please enter some text.")
             return
@@ -111,56 +159,83 @@ class TextKGWidget(QWidget):
             
         model = self.model_selector.currentText()
         
-        # Configure Extractor
         self.extractor.set_api_key(api_key)
         self.extractor.set_model(model)
             
         try:
-            # Show busy? (Maybe add cursor wait)
-            from PyQt6.QtWidgets import QApplication
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             
             self.generated_graph = self.extractor.extract_triples(text)
             
             QApplication.restoreOverrideCursor()
             
-            # Update Table
-            self.display_table(self.generated_graph)
-            
-            # Update Graph View
-            self.graph_viewer.display_graph(self.generated_graph)
+            self._display_table(self.gemini_table, self.generated_graph)
+            self.gemini_graph_viewer.display_graph(self.generated_graph)
             
             if len(self.generated_graph) > 0:
-                self.add_to_main_btn.setEnabled(True)
-                self.export_btn.setEnabled(True)
-                self.results_tabs.setCurrentIndex(1) 
+                self.gemini_merge_btn.setEnabled(True)
+                self.gemini_export_btn.setEnabled(True)
+                self.gemini_results_tabs.setCurrentIndex(1) 
                 QMessageBox.information(self, "Success", f"Generated {len(self.generated_graph)} triples using {model}.")
             else:
-                self.add_to_main_btn.setEnabled(False)
-                self.export_btn.setEnabled(False)
+                self.gemini_merge_btn.setEnabled(False)
+                self.gemini_export_btn.setEnabled(False)
                 QMessageBox.information(self, "Info", "No triples extracted or model returned empty results.")
                 
         except Exception as e:
-            from PyQt6.QtWidgets import QApplication
             QApplication.restoreOverrideCursor()
             QMessageBox.critical(self, "Error", f"Extraction failed: {e}")
 
-    def display_table(self, graph):
-        self.results_table.setRowCount(len(graph))
+    def generate_graph_spacy(self):
+        text = self.spacy_text_input.toPlainText()
+        if not text:
+            QMessageBox.warning(self, "Warning", "Please enter some text.")
+            return
+        
+        try:
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+            
+            # Lazy-load SpaCy extractor
+            if self.spacy_extractor is None:
+                from core.knowledge_extractor import KnowledgeExtractor
+                self.spacy_extractor = KnowledgeExtractor()
+            
+            self.generated_graph = self.spacy_extractor.extract_triples(text)
+            
+            QApplication.restoreOverrideCursor()
+            
+            self._display_table(self.spacy_table, self.generated_graph)
+            self.spacy_graph_viewer.display_graph(self.generated_graph)
+            
+            if len(self.generated_graph) > 0:
+                self.spacy_merge_btn.setEnabled(True)
+                self.spacy_export_btn.setEnabled(True)
+                self.spacy_results_tabs.setCurrentIndex(1)
+                QMessageBox.information(self, "Success", f"Generated {len(self.generated_graph)} triples using SpaCy NLP.")
+            else:
+                self.spacy_merge_btn.setEnabled(False)
+                self.spacy_export_btn.setEnabled(False)
+                QMessageBox.information(self, "Info", "No triples extracted. Try more explicit sentences with clear subject-verb-object structure.")
+                
+        except Exception as e:
+            QApplication.restoreOverrideCursor()
+            QMessageBox.critical(self, "Error", f"SpaCy extraction failed: {e}")
+
+    def _display_table(self, table, graph):
+        table.setRowCount(len(graph))
         for row_idx, (s, p, o) in enumerate(graph):
-            self.results_table.setItem(row_idx, 0, QTableWidgetItem(str(s)))
-            self.results_table.setItem(row_idx, 1, QTableWidgetItem(str(p)))
-            self.results_table.setItem(row_idx, 2, QTableWidgetItem(str(o)))
+            table.setItem(row_idx, 0, QTableWidgetItem(str(s)))
+            table.setItem(row_idx, 1, QTableWidgetItem(str(p)))
+            table.setItem(row_idx, 2, QTableWidgetItem(str(o)))
 
     def add_to_main_graph(self):
         if self.generated_graph:
             try:
-                # Add generated triples to the main RDF manager's graph
                 self.rdf_manager.graph += self.generated_graph
                 QMessageBox.information(self, "Success", "Added extracted triples to the main graph.")
-                self.add_to_main_btn.setEnabled(False) # Prevent double adding
+                self.gemini_merge_btn.setEnabled(False)
+                self.spacy_merge_btn.setEnabled(False)
                 
-                # Emit signal to notify parent
                 self.graph_merged.emit()
                 
             except Exception as e:
@@ -170,7 +245,6 @@ class TextKGWidget(QWidget):
         if not self.generated_graph:
             return
             
-        from PyQt6.QtWidgets import QFileDialog
         file_path, _ = QFileDialog.getSaveFileName(self, "Export RDF", "", 
                                                    "Turtle (*.ttl);;RDF/XML (*.rdf *.xml);;N-Triples (*.nt)")
         if file_path:
@@ -191,10 +265,8 @@ class TextKGWidget(QWidget):
              return
              
         try:
-            from PyQt6.QtWidgets import QApplication
             QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
             
-            # Use extractor to list models
             self.extractor.set_api_key(api_key)
             models = self.extractor.list_models()
             
@@ -205,7 +277,6 @@ class TextKGWidget(QWidget):
             QMessageBox.information(self, "Success", f"Fetched {len(models)} models.")
             
         except Exception as e:
-            from PyQt6.QtWidgets import QApplication
             QApplication.restoreOverrideCursor()
             QMessageBox.critical(self, "Error", f"Failed to list models: {e}")
 

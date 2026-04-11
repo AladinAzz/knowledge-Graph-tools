@@ -11,7 +11,7 @@ import io
 import re
 
 class GeminiExtractor:
-    def __init__(self, api_key=None, model_name="gemini-pro"):
+    def __init__(self, api_key=None, model_name="gemini-2.0-flash"):
         self.api_key = api_key
         self.model_name = model_name
         self.ns = Namespace("http://example.org/kb/")
@@ -25,7 +25,6 @@ class GeminiExtractor:
     def set_api_key(self, api_key):
         self.api_key = api_key
         genai.configure(api_key=api_key)
-        # Re-initialize model to be safe? usually configure is global but good to be sure
         self.model = genai.GenerativeModel(self.model_name)
 
     def set_model(self, model_name):
@@ -63,9 +62,6 @@ class GeminiExtractor:
             turtle_code = re.sub(r'```', '', turtle_code)
             turtle_code = turtle_code.strip()
             
-            # Wrap in prefixes if missing (rdflib can handle some but good to match)
-            # Actually, let's just let rdflib parse it.
-            
             g = Graph()
             # Bind common prefixes
             g.bind("kb", self.ns)
@@ -73,38 +69,34 @@ class GeminiExtractor:
             g.bind("foaf", Namespace("http://xmlns.com/foaf/0.1/"))
             g.bind("schema", Namespace("http://schema.org/"))
             
-            # We might need to prepend prefixes if the model didn't output them
-            # But usually models are good at full valid ttl if asked.
-            # Let's verify by try-parse
-            
             g.parse(data=turtle_code, format="turtle")
             
             return g
             
         except Exception as e:
-            raise Exception(f"Gemini Extraction Failed: {e}")
+            # Provide more specific error messages
+            error_str = str(e)
+            if "API_KEY" in error_str or "401" in error_str or "403" in error_str:
+                raise Exception(f"Gemini API Authentication Failed. Check your API key.\nDetails: {e}")
+            elif "429" in error_str or "quota" in error_str.lower():
+                raise Exception(f"Gemini API Rate Limit Exceeded. Please wait and try again.\nDetails: {e}")
+            elif "timeout" in error_str.lower() or "connect" in error_str.lower():
+                raise Exception(f"Network Error. Check your internet connection.\nDetails: {e}")
+            else:
+                raise Exception(f"Gemini Extraction Failed: {e}")
 
     def list_models(self):
         """
         Lists available models that support content generation.
-        Returns a list of model names (e.g., 'models/gemini-pro').
+        Returns a list of model names (e.g., 'gemini-pro').
         """
         if not self.api_key:
              raise ValueError("API Key not set.")
              
         try:
-            # genai.configure must be called before this if not already
-            # It is called in set_api_key
             models = []
             for m in genai.list_models():
                 if 'generateContent' in m.supported_generation_methods:
-                    # Clean up name: 'models/gemini-pro' -> 'gemini-pro' if preferred, 
-                    # but usually the full name is needed for instantiation, 
-                    # except the SDK handles both. passing 'gemini-pro' works.
-                    # Let's keep the name as returned or strip 'models/' for display?
-                    # The user manual edit used "gemini-1.5-pro".
-                    # list_models returns 'models/gemini-1.5-pro'. 
-                    # simple replacement for display.
                     name = m.name
                     if name.startswith("models/"):
                         name = name.replace("models/", "")
@@ -112,4 +104,3 @@ class GeminiExtractor:
             return sorted(models)
         except Exception as e:
             raise Exception(f"Failed to list models: {e}")
-            

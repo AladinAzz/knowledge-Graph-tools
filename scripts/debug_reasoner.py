@@ -1,5 +1,16 @@
-from core.reasoner import ReasoningEngine
+"""
+Debug Reasoner Script
+
+This script is used to debug the reasoning engine.
+It tests ontology loading, transitivity reasoning, and triple inference 
+using both owlready2 directly and the application's ReasoningEngine.
+"""
+
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from core.reasoner import ReasoningEngine
 import rdflib
 
 SAMPLE_OWL_REASONING = """<?xml version="1.0"?>

@@ -1,3 +1,10 @@
+"""
+Unit Tests for RDFManager
+
+This module contains unit tests for the RDFManager class, verifying 
+graph loading, statistics extraction, and namespace management.
+"""
+
 import pytest
 import os
 from core.rdf_manager import RDFManager

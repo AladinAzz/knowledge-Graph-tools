@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns="http://example.org/test#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://example.org/test#Dog">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://example.org/test#Mammal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#MyCar">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://example.org/test#Car"/>
+    <hasLicensePlate>XYZ-1234</hasLicensePlate>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Mammal">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://example.org/test#Animal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Person">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Car">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://example.org/test#Vehicle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#hasLicensePlate">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="http://example.org/test#Vehicle"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Fido">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://example.org/test#Dog"/>
+    <hasAge rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</hasAge>
+    <hasOwner rdf:resource="http://example.org/test#Alice"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#hasAge">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="http://example.org/test#Animal"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Alice">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://example.org/test#Person"/>
+    <drives rdf:resource="http://example.org/test#MyCar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#hasOwner">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://example.org/test#Animal"/>
+    <rdfs:range rdf:resource="http://example.org/test#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#drives">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://example.org/test#Person"/>
+    <rdfs:range rdf:resource="http://example.org/test#Vehicle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Cat">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://example.org/test#Mammal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Bird">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://example.org/test#Animal"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Vehicle">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/test#Animal">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+</rdf:RDF>

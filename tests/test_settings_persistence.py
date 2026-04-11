@@ -1,6 +1,13 @@
 
 import sys
 import os
+"""
+Unit Tests for SettingsManager Persistence
+
+This module contains unit tests for the SettingsManager, verifying 
+that settings and query history are correctly saved to and loaded from XML.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 import xml.etree.ElementTree as ET

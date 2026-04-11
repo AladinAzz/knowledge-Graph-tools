@@ -1,78 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-	xmlns:owl="http://www.w3.org/2002/07/owl#"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:plants="http://www.linkeddatatools.com/plants#">
-
-  <!-- OWL Header Example -->
-	<owl:Ontology rdf:about="http://www.linkeddatatools.com/plants">
-		<dc:title>The LinkedDataTools.com Example Plant Ontology</dc:title>
-		<dc:description>An example ontology written for the LinkedDataTools.com RDFS &amp; OWL introduction tutorial</dc:description>
-	</owl:Ontology>
-
-	<!-- OWL Class Definition - Plant Type -->
-	<owl:Class rdf:about="http://www.linkeddatatools.com/plants#planttype">
-
-		<rdfs:label>The plant type</rdfs:label>
-		<rdfs:comment>The class of all plant types.</rdfs:comment>
-
-	</owl:Class>
-
-	<!-- OWL Subclass Definition - Flower -->
-	<owl:Class rdf:about="http://www.linkeddatatools.com/plants#flowers">
-
-		<!-- Flowers is a subclassification of planttype -->
-		<rdfs:subClassOf rdf:resource="http://www.linkeddatatools.com/plants#planttype"/>
-
-		<rdfs:label>Flowering plants</rdfs:label>
-		<rdfs:comment>Flowering plants, also known as angiosperms.</rdfs:comment>
-
-	</owl:Class>
-
-	<!-- OWL Subclass Definition - Shrub -->
-	<owl:Class rdf:about="http://www.linkeddatatools.com/plants#shrubs">
-
-		<!-- Shrubs is a subclassification of planttype -->
-		<rdfs:subClassOf rdf:resource="http://www.linkeddatatools.com/plants#planttype"/>
-
-		<rdfs:label>Shrubbery</rdfs:label>
-		<rdfs:comment>Shrubs, a type of plant which branches from the base.</rdfs:comment>
-
-	</owl:Class>
-
-  <!-- Define the family property -->
-	<owl:DatatypeProperty rdf:about="http://www.linkeddatatools.com/plants#family"/>
-
-	<!-- Define the similarlyPopularTo property -->
-	<owl:ObjectProperty rdf:about="http://www.linkeddatatools.com/plants#similarlyPopularTo"/>
-
-	<!-- Define the Orchid class instance -->
-	<rdf:Description rdf:about="http://www.linkeddatatools.com/plants#orchid">
-
-		<!-- Orchid is an individual (instance) of the flowers class -->
-		<rdf:type rdf:resource="http://www.linkeddatatools.com/plants#flowers"/>
-
-		<!-- The orchid is part of the 'Orchidaceae' family -->
-		<plants:family>Orchidaceae</plants:family>
-
-		<!-- The orchid is similarly popular to the magnolia -->
-		<plants:similarlyPopularTo rdf:resource="http://www.linkeddatatools.com/plants#magnolia"/>
-
-	</rdf:Description>
-
-	<!-- Define the Magnolia class instance -->
-	<rdf:Description rdf:about="http://www.linkeddatatools.com/plants#magnolia">
-
-		<!-- Magnolia is an individual (instance) of the flowers class -->
-		<rdf:type rdf:resource="http://www.linkeddatatools.com/plants#flowers"/>
-
-		<!-- The magnolia is part of the 'Magnoliaceae' family -->
-		<plants:family>Magnoliaceae</plants:family>
-
-		<!-- The magnolia is similarly popular to the orchid -->
-		<plants:similarlyPopularTo rdf:resource="http://www.linkeddatatools.com/plants#orchid"/>
-
-	</rdf:Description>
-
+   xmlns:ns1="http://example.org/kb/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://example.org/kb/OntologyLoadFailureEvent_1">
+    <ns1:hasCause rdf:resource="http://example.org/kb/InvalidArgumentError_1"/>
+    <rdf:type rdf:resource="http://example.org/kb/OntologyLoadFailure"/>
+    <ns1:involvesOntology rdf:resource="http://example.org/kb/FailedOntology_1"/>
+    <ns1:hasStatus rdf:resource="http://example.org/kb/LoadStatusFailed"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/LoadStatus">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/FailedOntology_1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <ns1:filePath>/C:/Users/derrm/AppData/Local/Temp/tmplrn0gdmg.owl</ns1:filePath>
+    <ns1:filePath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">/C:/Users/derrm/AppData/Local/Temp/tmplrn0gdmg.owl</ns1:filePath>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/InvalidArgumentError_1">
+    <ns1:errorMessage>Invalid argument</ns1:errorMessage>
+    <ns1:errorMessage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Invalid argument</ns1:errorMessage>
+    <rdf:type rdf:resource="http://example.org/kb/InvalidArgumentError"/>
+    <ns1:errorCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">22</ns1:errorCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/InvalidArgumentError">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/LoadStatusFailed">
+    <rdf:type rdf:resource="http://example.org/kb/LoadStatus"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/kb/OntologyLoadFailure">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
 </rdf:RDF>

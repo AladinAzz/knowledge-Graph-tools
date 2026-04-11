@@ -18,16 +18,33 @@ class SPARQLHighlighter(QSyntaxHighlighter):
         keyword_format.setForeground(QColor("darkblue"))
         keyword_format.setFontWeight(QFont.Weight.Bold)
         
+        # Single-word keywords
         keywords = [
-            "SELECT", "WHERE", "FILTER", "OPTIONAL", "UNION", "Generic",
-            "DISTINCT", "LIMIT", "OFFSET", "ORDER BY", "ASC", "DESC",
-            "Construct", "DESCRIBE", "ASK", "PREFIX", "BASE",
-            "FROM", "NAMED", "GRAPH", "MINUS", "EXISTS", "NOT EXISTS",
-            "BIND", "AS", "VALUES", "a"
+            "SELECT", "WHERE", "FILTER", "OPTIONAL", "UNION",
+            "DISTINCT", "REDUCED", "LIMIT", "OFFSET", "ASC", "DESC",
+            "CONSTRUCT", "DESCRIBE", "ASK", "PREFIX", "BASE",
+            "FROM", "NAMED", "GRAPH", "MINUS", "EXISTS",
+            "BIND", "AS", "VALUES", "SERVICE", "SILENT",
+            "INTO", "USING", "WITH", "HAVING",
+            "INSERT", "DELETE", "LOAD", "CLEAR", "DROP", "CREATE",
+            "COPY", "MOVE", "ADD", "a"
         ]
         
         for word in keywords:
             pattern = QRegularExpression(f"\\b{word}\\b", QRegularExpression.PatternOption.CaseInsensitiveOption)
+            self.highlighting_rules.append((pattern, keyword_format))
+        
+        # Multi-word keywords (ORDER BY, GROUP BY, NOT EXISTS, INSERT DATA, DELETE DATA)
+        multi_keywords = [
+            r"\bORDER\s+BY\b",
+            r"\bGROUP\s+BY\b",
+            r"\bNOT\s+EXISTS\b",
+            r"\bINSERT\s+DATA\b",
+            r"\bDELETE\s+DATA\b",
+            r"\bDELETE\s+WHERE\b",
+        ]
+        for pattern_str in multi_keywords:
+            pattern = QRegularExpression(pattern_str, QRegularExpression.PatternOption.CaseInsensitiveOption)
             self.highlighting_rules.append((pattern, keyword_format))
 
         # Variable Format (Green) ?var or $var
@@ -46,7 +63,8 @@ class SPARQLHighlighter(QSyntaxHighlighter):
             "YEAR", "MONTH", "DAY", "HOURS", "MINUTES", "SECONDS", "TIMEZONE",
             "TZ", "NOW", "UUID", "STRUUID", "MD5", "SHA1", "SHA256", "SHA384",
             "SHA512", "COALESCE", "IF", "STRLANG", "STRDT", "sameTerm",
-            "isIRI", "isURI", "isBLANK", "isLITERAL", "isNUMERIC", "REGEX"
+            "isIRI", "isURI", "isBLANK", "isLITERAL", "isNUMERIC", "REGEX",
+            "COUNT", "SUM", "MIN", "MAX", "AVG", "SAMPLE", "GROUP_CONCAT"
         ]
         for func in functions:
              pattern = QRegularExpression(f"\\b{func}\\b", QRegularExpression.PatternOption.CaseInsensitiveOption)
@@ -60,14 +78,13 @@ class SPARQLHighlighter(QSyntaxHighlighter):
         # QName Format (Dark Cyan) prefix:suffix
         qname_format = QTextCharFormat()
         qname_format.setForeground(QColor("darkcyan"))
-        # Simple QName regex
         self.highlighting_rules.append((QRegularExpression("\\w*:\\w+"), qname_format))
 
-        # String Format (Red) "string" or 'string'
+        # String Format (Red) - non-greedy to avoid matching across multiple strings
         string_format = QTextCharFormat()
         string_format.setForeground(QColor("darkred"))
-        self.highlighting_rules.append((QRegularExpression("\".*\""), string_format))
-        self.highlighting_rules.append((QRegularExpression("'.*'"), string_format))
+        self.highlighting_rules.append((QRegularExpression("\".*?\""), string_format))
+        self.highlighting_rules.append((QRegularExpression("'.*?'"), string_format))
 
         # Comment Format (Gray, Italic) # comment
         comment_format = QTextCharFormat()

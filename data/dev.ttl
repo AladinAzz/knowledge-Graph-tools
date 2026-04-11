@@ -1,0 +1,38 @@
+@prefix kb: <http://example.org/kb/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix schema: <http://schema.org/> .
+
+kb:City rdf:type owl:Class .
+
+kb:has_train_connection rdf:type owl:ObjectProperty , owl:SymmetricProperty ;
+rdfs:domain kb:City ;
+rdfs:range kb:City .
+
+kb:has_flight_to rdf:type owl:ObjectProperty ;
+rdfs:domain kb:City ;
+rdfs:range kb:City .
+
+kb:alger rdf:type kb:City ;
+schema:name "Alger" ;
+kb:has_train_connection kb:oran ;
+kb:has_flight_to kb:annaba .
+
+kb:oran rdf:type kb:City ;
+schema:name "Oran" ;
+kb:has_train_connection kb:alger , kb:bechar .
+
+kb:bechar rdf:type kb:City ;
+schema:name "Béchar" ;
+kb:has_train_connection kb:alger .
+
+kb:annaba rdf:type kb:City ;
+schema:name "Annaba" ;
+kb:has_train_connection kb:constantine ;
+kb:has_flight_to kb:alger .
+
+kb:constantine rdf:type kb:City ;
+schema:name "Constantine" ;
+kb:has_train_connection kb:annaba ;
+kb:has_flight_to kb:oran .

@@ -9,6 +9,9 @@ env/
 .env
 core/__pycache__/
 
+# User settings & secrets
+settings.xml
+
 # Testing
 .pytest_cache/
 .coverage
@@ -33,6 +36,9 @@ dist/
 .installed.cfg
 *.egg
 MANIFEST
+
+Installateur/*.exe
+
 
 # Project specific outputs/data (optional, but good practice to keep clean)
 # *.owl

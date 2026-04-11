@@ -1,5 +1,12 @@
 import sys
 import os
+"""
+Integration Tests for New Features
+
+This module contains tests for the newly added features such as 
+graph statistics, ontology validation, and performance metrics.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 

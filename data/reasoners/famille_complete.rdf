@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:ex="http://example.org/famille#"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://example.org/famille#Woman">
+    <rdfs:subClassOf rdf:resource="http://example.org/famille#Person"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#Luke">
+    <ex:hasSibling rdf:resource="http://example.org/famille#Leia"/>
+    <rdf:type rdf:resource="http://example.org/famille#Man"/>
+    <ex:hasParent rdf:resource="http://example.org/famille#DarthVader"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#hasSibling">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#Person">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#Leia">
+    <rdf:type rdf:resource="http://example.org/famille#Woman"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#hasChild">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <owl:inverseOf rdf:resource="http://example.org/famille#hasParent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#Man">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://example.org/famille#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#DarthVader">
+    <rdf:type rdf:resource="http://example.org/famille#Man"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/famille#hasParent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+</rdf:RDF>

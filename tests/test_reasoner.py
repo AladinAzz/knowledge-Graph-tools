@@ -1,3 +1,10 @@
+"""
+Unit Tests for ReasoningEngine
+
+This module contains unit tests for the ReasoningEngine class, 
+verifying that OWL reasoning correctly infers new triples from an ontology.
+"""
+
 import pytest
 from core.reasoner import ReasoningEngine
 import os

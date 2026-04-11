@@ -1,3 +1,10 @@
+"""
+Unit Tests for SPARQLEngine
+
+This module contains unit tests for the SPARQLEngine, verifying 
+SELECT, ASK, CONSTRUCT queries and SPARQL UPDATE operations.
+"""
+
 import pytest
 from core.rdf_manager import RDFManager
 from core.sparql_engine import SPARQLEngine

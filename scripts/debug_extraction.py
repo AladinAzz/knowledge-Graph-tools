@@ -1,3 +1,11 @@
+"""
+Debug Extraction Script
+
+This script is used to debug the knowledge extraction process. 
+It processes a sample text, runs SpaCy NER, and then uses the KnowledgeExtractor 
+to generate RDF triples, saving the results to debug_output.txt.
+"""
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

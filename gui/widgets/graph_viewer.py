@@ -24,7 +24,6 @@ class GraphWebPage(QWebEnginePage):
         self.viewer = viewer
 
     def acceptNavigationRequest(self, url, _type, isMainFrame):
-        # Check if it's a clicked link or explicit navigation to an external site
         scheme = url.scheme()
         url_str = url.toString()
         
@@ -41,7 +40,7 @@ class GraphWebPage(QWebEnginePage):
         
         if scheme in ['http', 'https']:
             QDesktopServices.openUrl(url)
-            return False # Prevent loading in the widget
+            return False
             
         return super().acceptNavigationRequest(url, _type, isMainFrame)
 
@@ -71,7 +70,6 @@ class GraphViewer(QWidget):
         self.layout.addLayout(controls_layout)
 
         self.web_view = QWebEngineView()
-        # Set custom page to handle navigation
         self.web_page = GraphWebPage(self)
         self.web_view.setPage(self.web_page)
         self.layout.addWidget(self.web_view)
@@ -104,9 +102,10 @@ class GraphViewer(QWidget):
         """
         Converts rdflib graph to PyVis network and displays it.
         """
+        # Clean up previous temp file to prevent leaks (IMP-11 fix)
+        self.cleanup()
+        
         self.current_graph = rdflib_graph
-        # Use in_line resources to embed vis.js directly in the HTML
-        # This fixes 'vis is not defined' when loading from temp file in QWebEngineView
         net = Network(height="100%", width="100%", bgcolor="#222222", font_color="white", cdn_resources="in_line")
         
         # Apply Layout Options
@@ -132,31 +131,27 @@ class GraphViewer(QWidget):
         elif layout_mode == "Barnes Hut":
             net.barnes_hut()
         else:
-            # Default Force Directed (ForceAtlas2 is usually good)
             net.force_atlas_2based()
 
-        # Limit nodes for performance if graph is large
-        max_nodes = 500
+        # Limit triples for performance (BUG-9 fix: renamed and fixed off-by-one)
+        max_triples = 500
         count = 0
         
         for s, p, o in rdflib_graph:
-            if count > max_nodes:
+            if count >= max_triples:
                 break
                 
             s_str = str(s)
             o_str = str(o)
             p_str = str(p)
             
-            # Add nodes
             # Simple heuristic for labels: last part of URI
             s_label = s_str.split('/')[-1].split('#')[-1]
             o_label = o_str.split('/')[-1].split('#')[-1]
             
-            # Use URI as title (tooltip) AND id
             net.add_node(s_str, label=s_label, title=s_str, color="#97C2FC")
             net.add_node(o_str, label=o_label, title=o_str, color="#FB7E81")
             
-            # Add edge
             net.add_edge(s_str, o_str, title=p_str, label=p_str.split('/')[-1].split('#')[-1])
             count += 1
             
@@ -164,46 +159,32 @@ class GraphViewer(QWidget):
         fd, path = tempfile.mkstemp(suffix=".html")
         os.close(fd)
         
-        # PyVis save_graph uses default encoding (cp1252 on Windows) which fails with unicode chars.
-        # We generate the HTML string and write it manually with utf-8.
         html = net.generate_html()
         
-        # 1. Ensure 'network' variable is accessible globally so we can attach events
-        # PyVis often declares 'var network = ...'. We change it to 'window.network = ...' 
-        # or just hope it's global. Replacing 'var network' with 'window.network' is safer.
+        # Make network variable global for JS event handlers
         html = html.replace("var network = ", "window.network = ")
         
-        # 2. Inject JS Event Listeners
-        # logic:
-        # - click/selectNode: Selects the node (notify Python to enable remove button)
-        # - doubleClick: Opens URI
+        # Inject JS Event Listeners
         js_handler = """
         <script type="text/javascript">
-            // Wait for network to be ready
             setTimeout(function() {
                 if (typeof window.network !== 'undefined') {
                     
-                    // Handle Selection (Single Click / Select)
                     window.network.on("selectNode", function (params) {
                         if (params.nodes.length > 0) {
                             var nodeId = params.nodes[0];
-                            // Navigate to special CMD url to notify Python
                             window.location.href = "cmd://select/" + nodeId;
                         }
                     });
                     
-                    // Handle Deselection
                     window.network.on("deselectNode", function (params) {
                          window.location.href = "cmd://deselect";
                     });
 
-                    // Handle Double Click (Open URI)
                     window.network.on("doubleClick", function (params) {
                         if (params.nodes.length > 0) {
                             var nodeId = params.nodes[0];
-                            // Check if it's a valid http/https URI
                             if (nodeId.startsWith("http://") || nodeId.startsWith("https://")) {
-                                // Navigate to it - this will be intercepted by Python
                                 window.location.href = nodeId;
                             }
                         }
@@ -212,7 +193,7 @@ class GraphViewer(QWidget):
                 } else {
                     console.log("Error: window.network not found for click handler.");
                 }
-            }, 500); // Small delay to ensure init
+            }, 500);
         </script>
         """
         
@@ -228,5 +209,6 @@ class GraphViewer(QWidget):
         if self.tmp_file and os.path.exists(self.tmp_file):
             try:
                 os.remove(self.tmp_file)
+                self.tmp_file = None
             except:
                 pass

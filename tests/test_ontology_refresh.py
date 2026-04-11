@@ -1,5 +1,12 @@
 import sys
 import os
+"""
+Tests for Ontology Refresh Logic
+
+This module contains integration tests verifying that the ontology hierarchy 
+and properties refresh correctly when the graph changes, without mutating the main graph.
+"""
+
 import pytest
 from unittest.mock import MagicMock, patch
 

@@ -1,6 +1,13 @@
 
 import sys
 import os
+"""
+UI Tests for Application Theming
+
+This module contains tests for the dark theme toggle and settings persistence 
+related to visual appearance.
+"""
+
 import pytest
 from PyQt6.QtWidgets import QApplication
 

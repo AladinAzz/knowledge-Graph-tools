@@ -10,6 +10,8 @@ back to a format compatible with the rest of the application (rdflib graph).
 from owlready2 import sync_reasoner_pellet, sync_reasoner, World, Ontology
 import rdflib
 import os
+import pathlib
+import time
 
 class ReasoningEngine:
     """
@@ -22,15 +24,18 @@ class ReasoningEngine:
     def run_reasoner(self, ontology_path, reasoner_type='hermit'):
         """
         Runs the reasoner on the given ontology.
-        Returns a list of inferred triples (this is tricky with owlready2 directly, 
-        usually it updates the ontology in place).
+        Returns a tuple of (inferred_graph, elapsed_seconds).
         """
+        start_time = time.perf_counter()
         try:
             # Load ontology into the isolated world
-            if not ontology_path.startswith('file://') and not ontology_path.startswith('http'):
-                iri = f"file://{ontology_path}"
-            else:
+            # owlready2 handles paths natively — avoid pathlib.as_uri() which
+            # produces /C:/... on Windows after owlready2 strips the scheme.
+            if ontology_path.startswith('http'):
                 iri = ontology_path
+            else:
+                abs_path = str(pathlib.Path(ontology_path).resolve())
+                iri = "file://" + abs_path.replace("\\", "/")
                 
             onto = self.world.get_ontology(iri).load()
             
@@ -53,7 +58,8 @@ class ReasoningEngine:
                 
                 g = rdflib.Graph()
                 g.parse(temp_path, format="xml")
-                return g
+                elapsed = time.perf_counter() - start_time
+                return g, elapsed
             finally:
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
@@ -64,6 +70,23 @@ class ReasoningEngine:
     def apply_inference_to_graph(self, original_graph: rdflib.Graph, inferred_graph: rdflib.Graph):
         """
         Calculates the difference to find actual inferred triples.
+        Uses structural fragment matching to brutally ignore any URI Prefix changes 
+        caused by temp files or Pyinstaller environment differences.
         """
-        inferred_triples = inferred_graph - original_graph
-        return inferred_triples
+        from rdflib import Graph
+        new_triples = Graph()
+        
+        def get_frag(uri):
+            s = str(uri)
+            if '#' in s: return s.split('#')[-1]
+            if '/' in s: return s.split('/')[-1]
+            return s
+            
+        orig_signatures = {(get_frag(s), get_frag(p), get_frag(o)) for s, p, o in original_graph}
+        
+        for s, p, o in inferred_graph:
+            sig = (get_frag(s), get_frag(p), get_frag(o))
+            if sig not in orig_signatures:
+                new_triples.add((s, p, o))
+                
+        return new_triples

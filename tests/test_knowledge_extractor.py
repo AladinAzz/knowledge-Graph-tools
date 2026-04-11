@@ -1,4 +1,11 @@
 
+"""
+Unit Tests for KnowledgeExtractor (SpaCy)
+
+This module contains unit tests for the rule-based knowledge extractor, 
+verifying pronoun resolution and entity extraction logic.
+"""
+
 import pytest
 from core.knowledge_extractor import KnowledgeExtractor
 from rdflib import Graph, URIRef, Literal, Namespace
