@@ -23,7 +23,7 @@
 
 ### Option A : Installateur Windows (Recommandé)
 
-1. Téléchargez le fichier `Knowledge_Graph_Manager_Setup.exe` depuis le dossier `Installateur/`.
+1. Téléchargez le fichier `Knowledge_Graph_Manager_Setup.exe` depuis le lien `[Installateur](https://drive.google.com/file/d/1xb94AnZ67cGHQgXUKMIE9woHSfGFIg2k/view?usp=sharing)`.
 2. Double-cliquez sur l'installateur et suivez les instructions.
 3. Lancez l'application depuis le raccourci créé sur le Bureau ou dans le menu Démarrer.
 
