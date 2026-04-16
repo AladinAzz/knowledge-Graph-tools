@@ -84,6 +84,7 @@ Au lancement, l'application affiche la fenêtre principale avec :
 
 L'interface est composée de 5 zones principales :
 
+![Alt Text](image.png)
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │  Menu Bar : File | View | Reasoning | Tools                 │
